@@ -5,3 +5,4 @@ passlib
 typing
 pydantic_settings
 alembic
+jwt
