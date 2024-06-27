@@ -1,16 +1,6 @@
 from pydantic import BaseModel
 
-# username = Column(String, unique=True, index=True)
-#     email = Column(String, unique=True, index=True)
-#     firstName = Column(String)
-#     lastName = Column(String)
-#     role = Column(String)
-#     isActive = Column(Boolean, default=True)
-#     isVerified = Column(Boolean, default=False)
-#     isCompletedProfile = Column(Boolean, default=False)
-#     hashed_mobile_otp = Column(String, nullable=True)
-#     hashed_email_otp = Column(String, nullable=True)
-#     hashed_password = Column(String)
+from app.core.schemas import BaseAllMixin
 
 
 class UserCreate(BaseModel):
@@ -19,34 +9,30 @@ class UserCreate(BaseModel):
     email: str
     firstName: str
     lastName: str
-    role: str
-    # isActive: bool
-    # isVerified: bool
-    # isCompletedProfile: bool
-    # hashed_mobile_otp: str
-    # hashed_email_otp: str
+    roleId: int
 
 
-class UserOut(UserCreate):
+class UserOut(BaseAllMixin):
     id: int
-    # username: str
-    # email: str
-    # firstName: str
-    # lastName: str
-    # role: str
-    isActive: bool
-    isVerified: bool
-    isCompletedProfile: bool
+    username: str
+    email: str
+    firstName: str
+    lastName: str
+    roleId: int = 0
+    isActive: bool = False
+    isVerified: bool = False
+    isCompletedProfile: bool = False
+    # role: any = None
 
     class Config:
         from_attributes = True
 
 
-class UserLoginOut(UserOut):
-    access_token: str
-    token_type: str
+class UserCreateOut(UserOut):
+    token: str
+    tokenType: str
 
 
 class Token(BaseModel):
-    access_token: str
-    token_type: str
+    token: str
+    tokenType: str

@@ -1,70 +1,11 @@
-# from fastapi import APIRouter, Depends, HTTPException
-# from sqlalchemy.orm import Session
-
-# from app.core.database import SessionLocal
-# from app.category.models import Category
-# from app.category.schemas import CategoryCreate, CategoryOut
-
-# router = APIRouter()
-
-
-# def get_db():
-#     db = SessionLocal()
-#     try:
-#         yield db
-#     finally:
-#         db.close()
-
-
-# @router.post("/", response_model=CategoryOut)
-# async def create_category(category: CategoryCreate, db: Session = Depends(get_db)):
-#     new_category = Category(name=category.name)
-#     db.add(new_category)
-#     db.commit()
-#     db.refresh(new_category)
-#     return new_category
-
-
-# @router.get("/", response_model=list[CategoryOut])
-# async def get_categories(db: Session = Depends(get_db)):
-#     categories = db.query(Category).all()
-#     return categories
-
-
-# @router.get("/{id}", response_model=CategoryOut)
-# async def get_category(id: int, db: Session = Depends(get_db)):
-#     category = db.query(Category).filter(Category.id == id).first()
-#     if category is None:
-#         raise HTTPException(status_code=404, detail="Category not found")
-#     return category
-
-
-# @router.put("/{id}", response_model=CategoryOut)
-# async def update_category(id: int, category: CategoryCreate, db: Session = Depends(get_db)):
-#     existing_category = db.query(Category).filter(Category.id == id).first()
-#     if existing_category is None:
-#         raise HTTPException(status_code=404, detail="Category not found")
-#     existing_category.name = category.name
-#     db.commit()
-#     db.refresh(existing_category)
-#     return existing_category
-
-
-# @router.delete("/{id}")
-# async def delete_category(id: int, db: Session = Depends(get_db)):
-#     category = db.query(Category).filter(Category.id == id).first()
-#     if category is None:
-#         raise HTTPException(status_code=404, detail="Category not found")
-#     db.delete(category)
-#     db.commit()
-#     return {"message": "Category deleted successfully"}
-
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 # from fastapi.middleware.httpsredirect import HTTPSRedirectMiddleware
 from app.core.database import engine, Base
 from app.auth.routes import router as auth_router
 from app.category.routes import router as category_router
+from app.role.routes import router as role_router
+
 
 # Create all database tables
 Base.metadata.create_all(bind=engine)
@@ -84,6 +25,7 @@ app.add_middleware(
 # Routes
 app.include_router(auth_router, prefix="/auth", tags=["Auth"])
 app.include_router(category_router, prefix="/categories", tags=["Category"])
+app.include_router(role_router, prefix="/roles", tags=["Role"])
 
 
 @app.get("/")

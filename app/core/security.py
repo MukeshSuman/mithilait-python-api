@@ -1,28 +1,6 @@
-# from pydantic import BaseModel
-
-
-# class UserCreate(BaseModel):
-#     username: str
-#     password: str
-
-
-# class UserOut(BaseModel):
-#     id: int
-#     username: str
-
-#     class Config:
-#         orm_mode = True
-
-
-# class Token(BaseModel):
-#     access_token: str
-#     token_type: str
-
-# app/core/security.py
 import jwt
 from passlib.context import CryptContext
 from datetime import datetime, timedelta
-# from jose import JWTError, jwt
 from pydantic import BaseModel
 from typing import Optional
 
@@ -32,13 +10,13 @@ ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 30
 
 # Password hashing context
-pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
+pwd_context = CryptContext(schemes=["sha256_crypt"], deprecated="auto")
 
 # Utility functions for password hashing and verification
 
 
-def verify_password(plain_password: str, hashed_password: str) -> bool:
-    return pwd_context.verify(plain_password, hashed_password)
+async def verify_password(plain_password: str, hashed_password: str) -> bool:
+    return await pwd_context.verify(plain_password, hashed_password)
 
 
 def get_password_hash(password: str) -> str:
