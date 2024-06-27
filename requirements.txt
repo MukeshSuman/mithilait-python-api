@@ -1,7 +1,7 @@
 fastapi
 pydantic
 sqlalchemy
-passlib.context
+passlib
 typing
 pydantic_settings
 alembic
