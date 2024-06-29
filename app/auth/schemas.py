@@ -10,6 +10,7 @@ class UserCreate(BaseModel):
     firstName: str
     lastName: str
     roleId: int
+    mobileNumber: str
 
 
 class UserOut(BaseAllMixin):
@@ -22,13 +23,19 @@ class UserOut(BaseAllMixin):
     isActive: bool = False
     isVerified: bool = False
     isCompletedProfile: bool = False
-    # role: any = None
+    roleName: str = "GUEST"
+    mobileNumber: str | None = ""
 
     class Config:
         from_attributes = True
 
 
-class UserCreateOut(UserOut):
+# class UserCreateOut(UserOut):
+#     token: str
+#     tokenType: str
+
+
+class UserWithToken(UserOut):
     token: str
     tokenType: str
 
@@ -36,3 +43,8 @@ class UserCreateOut(UserOut):
 class Token(BaseModel):
     token: str
     tokenType: str
+
+
+class Login(BaseModel):
+    username: str
+    password: str

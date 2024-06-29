@@ -15,6 +15,7 @@ class User(Base, AllMixin):
     isActive = Column(Boolean, default=True)
     isVerified = Column(Boolean, default=False)
     isCompletedProfile = Column(Boolean, default=False)
+    mobileNumber = Column(String)
     hashed_mobile_otp = Column(String, nullable=True)
     hashed_email_otp = Column(String, nullable=True)
     hashed_password = Column(String)
