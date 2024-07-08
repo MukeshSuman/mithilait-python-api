@@ -1,5 +1,6 @@
+from fastapi import Depends
 from sqlalchemy import Column, Integer, String, Boolean, ForeignKey, inspect
-from app.core.database import Base
+from app.core.database import Base, get_db
 from app.core.models import AllMixin
 from sqlalchemy.orm import relationship
 from sqlalchemy.ext.hybrid import hybrid_property
@@ -25,9 +26,19 @@ class User(Base, AllMixin):
     @hybrid_property
     def roleName(self):
         return self.role.name
-    # role = relationship(Promotion, back_populates='sponsor')
-    # role = relationship('roles', foreign_keys='users.roleId')
-    # friends = relationship('Friend', backref='Friend.friend_id',primaryjoin='User.id==Friend.user_id', lazy='dynamic')
 
     def toDict(self):
-        return {c.key: getattr(self, c.key) for c in inspect(self).mapper.column_attrs}
+        dict_ = {}
+        for key in self.__mapper__.c.keys():
+            if not key.startswith('_'):
+                dict_[key] = getattr(self, key)
+
+        for key, prop in inspect(self.__class__).all_orm_descriptors.items():
+            if isinstance(prop, hybrid_property):
+                dict_[key] = getattr(self, key)
+        if not dict_["roleName"]:
+            dict_["roleName"] = "GUEST"
+        else:
+            dict_["roleName"] = dict_["roleName"].upper()
+        return dict_
+        # return {c.key: getattr(self, c.key) for c in inspect(self).mapper.column_attrs}

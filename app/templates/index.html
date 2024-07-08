@@ -4,14 +4,14 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <!-- <script>
+    <script>
         document.addEventListener("DOMContentLoaded", (event) => {
             document.getElementById("myForm").addEventListener("submit", async function (e) {
                 e.preventDefault(); // Cancel the default action
                 const data = new FormData(e.target);
                 const value = Object.fromEntries(data.entries());
                 console.log({ value });
-                fetch("/systemInfo", {
+                fetch("/test-done", {
                     method: "POST",
                     body: JSON.stringify(value),
                     headers: {
@@ -25,15 +25,46 @@
                 // submitForm();
             });
         });
-    </script> -->
+    </script>
 </head>
 
 <body>
     <h1>Welcome</h1>
-    <p>BaseUrl: {{baseUrl}}</p>
-    <a href="{{baseUrl}}docs" style="padding: 10px;">Documentation, Click here</a>
-    <!-- <h2>System Info</h2> -->
-    <!-- <a href="/static/get_system_info.bat" download>
+
+    {% include 'school.html' %}
+
+    <form id="myForm" name="myForm" method="post" action="/test-done">
+        <div>
+            <label>Name</label><br>
+            <input name="name" id="name" required />
+        </div>
+        <div>
+            <label>Roll No</label><br>
+            <input name="rollNo" type="number" id="rollNo" required />
+        </div>
+        <div>
+            <label>Class</label><br>
+            <select name="className" id="className" required>
+                <!-- <option value="Class VI">Class VI</option> -->
+                <!-- <option value="Class VII">Class VII</option> -->
+                <!-- <option value="Class VIII">Class VIII</option> -->
+                <option value="Class IX">Class IX</option>
+                <option value="Class X">Class X</option>
+                <!-- <option value="Class XI">Class XI</option> -->
+                <option value="Class XII">Class XII</option>
+            </select>
+        </div>
+
+
+
+        <!-- <textarea style="width: 90%; height: 90%;" type="text" id="name" name="name" rows="30" cols="50"></textarea><br> -->
+        <input style="display: block; padding: 10px;" class="submit" type="submit" value="Submit">
+    </form>
+
+    <!-- <p>BaseUrl: {{baseUrl}}</p> -->
+    <!-- <a href="{{baseUrl}}docs" style="padding: 10px;">Documentation, Click here</a> -->
+    <!-- <h2>System Info</h2>
+    <a href="/static/get_system_info.bat" download>
         Download File
     </a>
     <form id="myForm" name="myForm" method="post" action="/systemInfo">
@@ -41,6 +72,14 @@
         <textarea style="width: 90%; height: 90%;" type="text" id="name" name="name" rows="30" cols="50"></textarea><br>
         <input style="display: block; padding: 10px;" class="submit" type="submit" value="Submit">
     </form> -->
+    <style>
+        input,
+        select {
+            height: 37px;
+            width: 420px;
+            margin-bottom: 10px;
+        }
+    </style>
 </body>
 
 </html>

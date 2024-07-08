@@ -17,8 +17,10 @@ class BaseResponse(BaseModel, Generic[T]):
         json_schema_extra = {
             "example": {
                 "statusCode": 200,
+                "success": True,
                 "message": "Operation completed successfully",
-                "data": {"key": "value"}
+                "data": {"key": "value"},
+                "error": None,
             }
         }
 
@@ -27,7 +29,7 @@ class BasePaginatedResponse(BaseModel, Generic[T]):
     statusCode: int = 200
     success: bool = True
     message: str = "success"
-    data: Optional[T] = None
+    items: Optional[T] = None
     pageNumber: int = 1
     pageSize: int = 20
     totalItems: int = 0
