@@ -112,23 +112,25 @@ def me(token: str = Depends(OAuth2PasswordBearer(tokenUrl="auth/token")), db: Se
 
 
 def get_all_user(pageNumber: int = 1, pageSize: int = 20, db: Session = Depends(get_db)):
-    offset = (pageNumber - 1) * pageSize
-    users_query = db.query(User).join(Role).offset(offset).limit(pageSize)
-    users = users_query.all()
-    totalItems = db.query(User).count()
-    totalPages = (totalItems + pageSize - 1) // pageSize
-    temp_ist = []
-    for user in users:
-        temp_user = user.toDict()
-        temp_user["roleName"] = user.roleName
-        temp_ist.append(UserOut(**temp_user))
-
-    data = {
-        "pageNumber": pageNumber,
-        "pageSize": pageSize,
-        "totalItems": totalItems,
-        "totalPage": totalPages,
-        "items": temp_ist
-    }
-
-    return BasePaginatedResponse[Any](**data, message="Users successfully")
+    try:
+        offset = (pageNumber - 1) * pageSize
+        users_query = db.query(User).join(Role).offset(offset).limit(pageSize)
+        users = users_query.all()
+        totalItems = db.query(User).count()
+        totalPages = (totalItems + pageSize - 1) // pageSize
+        temp_ist = []
+        for user in users:
+            temp_user = user.toDict()
+            temp_user["roleName"] = user.roleName
+            temp_ist.append(UserOut(**temp_user))
+        data = {
+            "pageNumber": pageNumber,
+            "pageSize": pageSize,
+            "totalItems": totalItems,
+            "totalPage": totalPages,
+            "items": temp_ist
+        }
+        return BasePaginatedResponse[Any](data=data, message="Users successfully")
+    except Exception as e:
+        print(e)
+        return str(e)

@@ -6,4 +6,4 @@ from app.core.models import AllMixin
 class Category(Base, AllMixin):
     __tablename__ = "categories"
     id = Column(Integer, primary_key=True, index=True)
-    name = Column(String, index=True)
+    name = Column(String(50), index=True)

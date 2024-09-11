@@ -6,15 +6,10 @@ from app.auth.schemas import UserCreate, UserWithToken, Login
 from app.core.schemas import BasePaginatedResponse, BaseResponse
 from app.auth.service import register_user, me, get_all_user, login_user
 from typing import Any
+from app.core.security import oauth2_scheme
 
 
 router = APIRouter()
-
-# OAuth2 scheme for authentication
-oauth2_scheme = OAuth2PasswordBearer(
-    tokenUrl="auth/token",
-    scheme_name="Login with username and password"
-)
 
 
 @router.post("/register", response_model=BaseResponse[UserWithToken])
@@ -112,5 +107,5 @@ def login_route(login: Login, db: Session = Depends(get_db)):
 
 @router.get("/all", response_model=BasePaginatedResponse[Any])
 # token: str = Depends(oauth2_scheme),
-async def get_all_users_route(pageNumber: int = 1, pageSize: int = 20, db: Session = Depends(get_db)):
+async def get_all_users_route(token: str = Depends(oauth2_scheme), pageNumber: int = 1, pageSize: int = 20, db: Session = Depends(get_db)):
     return get_all_user(pageNumber, pageSize, db)

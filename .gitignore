@@ -1,2 +1,53 @@
 mithilait-python-api-venv
 venv
+systemInfo
+# Python
+*.pyc
+*.pyo
+*.pyd
+__pycache__/
+*.env
+
+# Virtual Environment
+env/
+venv/
+ENV/
+.venv/
+.Python
+pip-log.txt
+pip-delete-this-directory.txt
+
+# Distribution / Packaging
+build/
+dist/
+*.egg-info/
+eggs/
+*.manifest
+*.spec
+
+# Logs
+*.log
+*.pot
+*.py[co]
+
+# Cache
+*.cache
+*.mypy_cache/
+.pytest_cache/
+.cache/
+.tox/
+
+# IDE files
+.vscode/
+.idea/
+
+# FastAPI specific
+# If you use alembic for database migrations
+migrations/
+
+# If you use docker
+docker-compose.override.yml
+Dockerfile
+*.dockerignore
+.env
+

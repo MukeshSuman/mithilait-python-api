@@ -6,3 +6,5 @@ typing
 pydantic_settings
 alembic
 jwt
+uvicorn
+mysql-connector-python

@@ -3,6 +3,8 @@ from passlib.context import CryptContext
 from datetime import datetime, timedelta
 from pydantic import BaseModel
 from typing import Optional, Dict, Any, Union
+from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
+from fastapi import Depends
 
 from app.auth.schemas import UserOut
 
@@ -76,3 +78,17 @@ def decode_access_token(token: str) -> Union[Dict[str, Any], str]:
         return "Token has expired"
     except jwt.InvalidTokenError:
         return "Invalid token"
+    except Exception as e:
+        print('e Exception', e)
+        return str(e)
+
+
+# OAuth2 scheme for authentication
+oauth2_scheme = OAuth2PasswordBearer(
+    tokenUrl="auth/token",
+    scheme_name="Login with username and password"
+)
+
+
+async def get_current_user(token: str = Depends(oauth2_scheme)):
+    return decode_access_token(token)

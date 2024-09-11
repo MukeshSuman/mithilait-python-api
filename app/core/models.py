@@ -18,18 +18,18 @@ class SoftDeleteMixin:
     def soft_delete(self, user):
         self.deletedAt = datetime.now()
         self.isDeleted = True
-        self.deletedBy = user.id
+        self.deletedBy = user['id']
 
 
 class ActionByMixin:
     createdBy = Column(Integer, default=0)
     updatedBy = Column(Integer, default=0)
 
-    def set_created_by(self, user=None):
-        self.createdBy = user.id | 0
+    def set_created_by(self, user: dict = None):
+        self.createdBy = user['id'] | 0
 
     def set_updated_by(self, user):
-        self.updatedBy = user.id
+        self.updatedBy = user['id']
 
 
 class AllMixin(ActionByMixin, TrackTimeMixin, SoftDeleteMixin):

@@ -1,5 +1,6 @@
-from pydantic import BaseModel, BeforeValidator
-from typing import Any, Generic, TypeVar, Optional, Annotated
+from fastapi import Query
+from pydantic import BaseModel, BeforeValidator, Field
+from typing import Any, Generic, List, TypeVar, Optional, Annotated
 from datetime import datetime
 
 T = TypeVar('T')
@@ -25,15 +26,59 @@ class BaseResponse(BaseModel, Generic[T]):
         }
 
 
+class BasePaginatedList(BaseModel, Generic[T]):
+    items: List[T] = Field(
+        [], description='List of items returned in the response following given criteria')
+    pageNumber: int = Field(
+        1, description='Number of items returned in the response')
+    pageSize: int = Field(
+        20, description='Number of items returned in the response')
+    totalItems: int = Field(0,
+                            description='Number of items returned in the response')
+    totalPage: int = Field(0,
+                           description='Number of pages returned in the response')
+
+
+# class BasePaginationQuery(BaseModel):
+#     pageNumber: int = Query(1, ge=1),
+#     pageSize: int = Query(20, ge=1),
+#     query: Optional[str] = Query(None, min_length=1, max_length=50),
+
+class PaginatedParams():
+    def __init__(
+            self,
+            pageNumber: int = Query(1, ge=1),
+            pageSize: int = Query(20, ge=1),
+            query: Optional[str] = Query(None, min_length=1, max_length=50),
+            sortBy: Optional[str] = Query(
+                "createdAt",
+                min_length=1,
+                max_length=20,
+                description="Sort by id, name, createdAt, updatedAt, etc...",
+            ),
+            orderBy: Optional[str] = Query(
+                "asc",
+                regex="^(asc|desc)$",
+                description="Order by asc or desc"
+            )
+    ):
+        self.offset = (pageNumber - 1) * pageSize
+        self.limit = pageSize
+        self.search = query
+        self.sortBy = sortBy
+        self.orderBy = orderBy
+        self.pageNumber = pageNumber
+        self.pageSize = pageSize
+
+    def getTotalPages(self, totalItems):
+        return (totalItems + self.pageSize - 1) // self.pageSize
+
+
 class BasePaginatedResponse(BaseModel, Generic[T]):
     statusCode: int = 200
     success: bool = True
     message: str = "success"
-    items: Optional[T] = None
-    pageNumber: int = 1
-    pageSize: int = 20
-    totalItems: int = 0
-    totalPage: int = 0
+    data: BasePaginatedList[T]
     error: Optional[Any] = None
 
     class Config:
@@ -41,12 +86,16 @@ class BasePaginatedResponse(BaseModel, Generic[T]):
         json_schema_extra = {
             "example": {
                 "statusCode": 200,
+                "success": True,
                 "message": "Operation completed successfully",
-                "data": [{"key": "value"}],
-                "pageNumber": 1,
-                "pageSize": 20,
-                "totalItems": 0,
-                "totalPage": 0
+                "data": {
+                    "items": [],
+                    "pageNumber": 1,
+                    "pageSize": 20,
+                    "totalItems": 0,
+                    "totalPage": 0
+                },
+                "error": None
             }
         }
 
