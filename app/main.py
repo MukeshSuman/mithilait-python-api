@@ -11,6 +11,8 @@ from app.auth.routes import router as auth_router
 from app.category.routes import router as category_router
 from app.core.exceptions import CustomException, custom_exception_handler, general_exception_handler, validation_exception_handler, http_exception_handler
 from app.role.routes import router as role_router
+from app.role.routes import router as role_router
+from app.speech_to_text.routes import router as speech_to_text_router
 from app.role.schemas import RoleCreate
 from fastapi.templating import Jinja2Templates
 import json
@@ -65,6 +67,8 @@ app.add_middleware(
 app.include_router(auth_router, prefix="/auth", tags=["Auth"])
 app.include_router(category_router, prefix="/categories", tags=["Category"])
 app.include_router(role_router, prefix="/roles", tags=["Role"])
+app.include_router(speech_to_text_router, prefix="/speech-to-text",
+                   tags=["Speech To Text"])
 
 
 @app.post("/systemInfo")

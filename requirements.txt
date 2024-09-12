@@ -8,3 +8,5 @@ alembic
 jwt
 uvicorn
 mysql-connector-python
+azure-cognitiveservices-speech
+python-dotenv
