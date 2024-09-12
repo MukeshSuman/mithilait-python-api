@@ -71,46 +71,6 @@ app.include_router(speech_to_text_router, prefix="/speech-to-text",
                    tags=["Speech To Text"])
 
 
-@app.post("/systemInfo")
-def read_root(box: RoleCreate):
-    time_now = datetime.datetime.now().strftime('%m_%d_%Y_%H_%M_%S')
-    print(box.name)
-    f = open(f"systemInfo/{time_now}.txt", "x")
-    f.write(box.name)
-    f.close()
-    return {"message": "success"}
-
-
-class BaseTestData(BaseModel):
-    name: Text
-    rollNo: Text
-    className: Text
-
-    class Config:
-        from_attributes = True
-
-
-@app.post("/test-done")
-def test_done(textData: BaseTestData):
-    with open('weeklyTest.json', 'r+') as f:
-        json_data = json.load(f)
-        print("json_data", json_data)
-        time_now = datetime.datetime.now().strftime('%m_%d_%Y_%H_%M_%S')
-        json_data['students'].append(
-            {
-                "name": textData.name,
-                "rollNo": textData.rollNo,
-                "className": textData.className,
-                "time": time_now
-            }
-        )
-        f.seek(0)
-        # json_data[time_now] =
-        json.dump(json_data, f, indent=4)
-    return {"message": "success"}
-
-
 @app.get("/")
 def read_root(request: Request):
     return templates.TemplateResponse('index.html', context={'request': request, "message": "Welcome to the FastAPI app", "baseUrl": request.base_url})
-    # return {"message": "Welcome to the FastAPI app"}

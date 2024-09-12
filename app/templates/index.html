@@ -1,85 +1,236 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 
 <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <script>
-        document.addEventListener("DOMContentLoaded", (event) => {
-            document.getElementById("myForm").addEventListener("submit", async function (e) {
-                e.preventDefault(); // Cancel the default action
-                const data = new FormData(e.target);
-                const value = Object.fromEntries(data.entries());
-                console.log({ value });
-                fetch("/test-done", {
-                    method: "POST",
-                    body: JSON.stringify(value),
-                    headers: {
-                        "Content-type": "application/json; charset=UTF-8"
-                    }
-                }).then((response) => response.json()).then((data) => {
-                    console.log(data);
-                    alert("Data saved successfully");
-                    document.getElementById("myForm").reset();
-                }).catch(console.error);
-                // submitForm();
-            });
-        });
-    </script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SpeechAI - Pronunciation Assessment Tool</title>
+
+    <!-- Include Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Include Font Awesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 </head>
 
-<body>
-    <h1>Welcome</h1>
+<body class="bg-gray-100">
 
-    {% include 'school.html' %}
+    <!-- Header Section -->
+    <header class="bg-blue-600 text-white p-6">
+        <h1 class="text-3xl font-bold text-center">SpeechAI - Pronunciation Assessment Tool</h1>
+        <p class="text-center mt-2">Analyze your pronunciation accuracy using AI-powered assessment.</p>
+    </header>
 
-    <form id="myForm" name="myForm" method="post" action="/test-done">
-        <div>
-            <label>Name</label><br>
-            <input name="name" id="name" required />
-        </div>
-        <div>
-            <label>Roll No</label><br>
-            <input name="rollNo" type="number" id="rollNo" required />
-        </div>
-        <div>
-            <label>Class</label><br>
-            <select name="className" id="className" required>
-                <!-- <option value="Class VI">Class VI</option> -->
-                <!-- <option value="Class VII">Class VII</option> -->
-                <!-- <option value="Class VIII">Class VIII</option> -->
-                <option value="Class IX">Class IX</option>
-                <option value="Class X">Class X</option>
-                <!-- <option value="Class XI">Class XI</option> -->
-                <option value="Class XII">Class XII</option>
-            </select>
-        </div>
+    <!-- Main Content -->
+    <main class="container mx-auto mt-10">
+        <!-- Input Section -->
+        <section class="bg-white p-6 rounded-lg shadow-md">
+            <h2 class="text-2xl font-semibold mb-4">Enter Your Practice Sentence and Upload Audio</h2>
 
+            <!-- Flexbox to align Sentence and Audio Input Side by Side -->
+            <div class="flex flex-col lg:flex-row space-y-4 lg:space-y-0 lg:space-x-6">
+                <!-- Practice Sentence Input -->
+                <div class="lg:w-1/2">
+                    <label for="practice-sentence" class="block text-lg font-medium mb-2">Practice Sentence</label>
+                    <textarea id="practice-sentence" class="w-full p-4 border border-gray-300 rounded-lg" rows="4"
+                        placeholder="Type your sentence here...">Sample sentence here.</textarea>
+                </div>
 
+                <!-- Audio File Input -->
+                <div class="lg:w-1/2">
+                    <label for="audio-upload" class="block text-lg font-medium mb-2">Upload Audio</label>
 
-        <!-- <textarea style="width: 90%; height: 90%;" type="text" id="name" name="name" rows="30" cols="50"></textarea><br> -->
-        <input style="display: block; padding: 10px;" class="submit" type="submit" value="Submit">
-    </form>
+                    <!-- Hidden File Input -->
+                    <input id="audio-upload" type="file" accept="audio/*" class="hidden" />
 
-    <!-- <p>BaseUrl: {{baseUrl}}</p> -->
-    <!-- <a href="{{baseUrl}}docs" style="padding: 10px;">Documentation, Click here</a> -->
-    <!-- <h2>System Info</h2>
-    <a href="/static/get_system_info.bat" download>
-        Download File
-    </a>
-    <form id="myForm" name="myForm" method="post" action="/systemInfo">
-        <label for="cat_name">System Info</label><br>
-        <textarea style="width: 90%; height: 90%;" type="text" id="name" name="name" rows="30" cols="50"></textarea><br>
-        <input style="display: block; padding: 10px;" class="submit" type="submit" value="Submit">
-    </form> -->
-    <style>
-        input,
-        select {
-            height: 37px;
-            width: 420px;
-            margin-bottom: 10px;
+                    <!-- Audio Icon Button -->
+                    <label for="audio-upload"
+                        class="bg-blue-500 text-white px-4 py-2 rounded-full shadow cursor-pointer hover:bg-blue-600 flex items-center justify-center w-12 h-12">
+                        <i class="fas fa-microphone-alt"></i> <!-- Audio Icon -->
+                    </label>
+
+                    <!-- Upload Progress Bar -->
+                    <div id="upload-progress" class="mt-4 hidden">
+                        <div class="w-full bg-gray-200 rounded-full h-5">
+                            <div id="progress-bar" class="bg-green-500 h-5 rounded-full" style="width: 0%;"></div>
+                        </div>
+                        <p id="upload-status" class="mt-2 text-sm text-gray-700">Uploading: 0%</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Recording Section -->
+        <section class="mt-8 text-center">
+            <button id="runScriptButton"
+                class="bg-green-500 text-white px-6 py-3 rounded-lg shadow-lg hover:bg-green-600" onclick="runScript()">
+                Run Script
+            </button>
+        </section>
+
+        <!-- Assessment Results Section -->
+        <section class="bg-white mt-10 p-6 rounded-lg shadow-md">
+            <h2 class="text-2xl font-semibold mb-4">Assessment Results</h2>
+
+            <!-- Responsive Columns for Scores -->
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+                <!-- Accuracy Score -->
+                <div id="accuracyScoreContainer" class="bg-gray-100 p-4 rounded-lg">
+                    <div class="flex justify-between">
+                        <span class="text-lg">Accuracy Score</span>
+                        <span class="text-lg font-semibold accuracyScoreValue">0%</span>
+                    </div>
+                    <div class="w-full bg-gray-200 rounded-full h-5 mt-2">
+                        <div class="h-5 rounded-full accuracyScorePercent" style="width: 0%;"></div>
+                    </div>
+                </div>
+
+                <!-- Fluency Score -->
+                <div id="fluencyScoreContainer" class="bg-gray-100 p-4 rounded-lg">
+                    <div class="flex justify-between">
+                        <span class="text-lg">Fluency Score</span>
+                        <span class="text-lg font-semibold fluencyScoreValue">0%</span>
+                    </div>
+                    <div class="w-full bg-gray-200 rounded-full h-5 mt-2">
+                        <div class="h-5 rounded-full fluencyScorePercent" style="width: 0%;"></div>
+                    </div>
+                </div>
+
+                <!-- Completeness Score -->
+                <div id="completenessScoreContainer" class="bg-gray-100 p-4 rounded-lg">
+                    <div class="flex justify-between">
+                        <span class="text-lg">Completeness Score</span>
+                        <span class="text-lg font-semibold completenessScoreValue">0%</span>
+                    </div>
+                    <div class="w-full bg-gray-200 rounded-full h-5 mt-2">
+                        <div class="h-5 rounded-full completenessScorePercent" style="width: 0%;"></div>
+                    </div>
+                </div>
+
+                <!-- Prosody Score -->
+                <div id="prosodyScoreContainer" class="bg-gray-100 p-4 rounded-lg">
+                    <div class="flex justify-between">
+                        <span class="text-lg">Prosody Score</span>
+                        <span class="text-lg font-semibold prosodyScoreValue">0%</span>
+                    </div>
+                    <div class="w-full bg-gray-200 rounded-full h-5 mt-2">
+                        <div class="h-5 rounded-full prosodyScorePercent" style="width: 0%;"></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="text-center mt-10 p-6 bg-blue-600 text-white">
+        <p>&copy; 2024 SpeechAI | Powered by <a href="https://mithilait.com" target="_blank"
+                rel="noopener noreferrer">Mithila
+                IT</a></p>
+    </footer>
+
+    <!-- JavaScript for File Upload -->
+    <script>
+
+        function updateScore(data = {}) {
+            ["accuracyScore", "fluencyScore", "completenessScore", "prosodyScore"].forEach(item => {
+                const val = (data[item] || 10);
+                // Get the container by ID
+                const container = document.getElementById(item + 'Container');
+
+                // Update the value text
+                const valueSpan = container.querySelector('.' + item + 'Value');
+                valueSpan.textContent = val + '%';
+
+                // Update the width of the progress bar
+                const percentDiv = container.querySelector('.' + item + 'Percent');
+                percentDiv.classList.remove(...["bg-green-500", "bg-purple-500", "bg-yellow-500", "bg-red-500"]);
+                if (val >= 76) {
+                    percentDiv.classList.add("bg-green-500");
+                } else if (val >= 51) {
+                    percentDiv.classList.add("bg-purple-500");
+                } else if (val >= 26) {
+                    percentDiv.classList.add("bg-yellow-500");
+                } else {
+                    percentDiv.classList.add("bg-red-500");
+                }
+                percentDiv.style.width = val + '%';
+            });
         }
-    </style>
+
+        async function runScript() {
+            const fileInput = document.getElementById('audio-upload');
+            const file = fileInput.files[0];
+
+            if (!file) {
+                alert('Please select a file.');
+                return;
+            }
+
+            // Create a FormData object to hold the file
+            const formData = new FormData();
+            formData.append('file', file);
+
+            const runScriptButton = document.getElementById('runScriptButton');
+            runScriptButton.disabled = true;
+            runScriptButton.textContent = 'Uploading...';
+
+            // Update progress bar function
+            const progressBar = document.getElementById('progress-bar');
+            const uploadProgress = document.getElementById('upload-progress');
+            const uploadStatus = document.getElementById('upload-status');
+
+
+            // Show progress container
+            // progressContainer.style.display = 'block';
+            uploadProgress.classList.remove('hidden');
+            const xhr = new XMLHttpRequest();
+
+            xhr.open('POST', '/speech-to-text/upload-audio/'); // Replace with your server endpoint
+
+            // Monitor the progress of the upload
+            xhr.upload.addEventListener('progress', function (event) {
+                if (event.lengthComputable) {
+                    const percentComplete = Math.round((event.loaded / event.total) * 100);
+                    progressBar.style.width = percentComplete + '%';
+                    uploadStatus.textContent = 'Uploading: ' + percentComplete + '%';
+                    if (percentComplete === 100) {
+                        uploadProgress.classList.add('hidden');
+                        runScriptButton.textContent = 'Script is running...';
+                    }
+                } else {
+                    uploadStatus.textContent = 'File uploading...';
+                }
+            });
+
+            // Handle when the upload is complete
+            xhr.addEventListener('load', function () {
+                runScriptButton.disabled = false;
+                runScriptButton.textContent = 'Run Script';
+                if (xhr.status === 200) {
+                    const response = JSON.parse(xhr.responseText);
+                    console.log(response);
+                    const data = response.data;
+                    console.log(data);
+                    updateScore({
+                        ...data
+                    });
+                    // uploadProgress.classList.add('hidden');
+                    uploadStatus.textContent = 'File uploaded successfully!';
+                } else {
+                    uploadStatus.textContent = 'Error uploading file!';
+                }
+            });
+
+            // Handle errors during upload
+            xhr.addEventListener('error', function () {
+                uploadStatus.textContent = 'Error uploading file!';
+            });
+
+            // Send the FormData (audio file)
+            xhr.send(formData);
+        }
+    </script>
+
 </body>
 
 </html>

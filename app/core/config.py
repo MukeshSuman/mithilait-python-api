@@ -8,14 +8,17 @@ load_dotenv()
 AZ_SPEECH_KEY = os.getenv('AZ_SPEECH_KEY', 'development')
 AZ_SERVICE_REGION = os.getenv('AZ_SERVICE_REGION')
 
-DB_SERVICE = "mysql+mysqlconnector"
-DB_USERNAME = "test4321"
-DB_PASSWORD = "test4321"
-DB_HOST = "localhost"
-DB_NAME = "test"
+DB_SERVICE = os.getenv('DB_SERVICE')
+DB_USERNAME = os.getenv('DB_USERNAME')
+DB_PASSWORD = os.getenv('DB_PASSWORD')
+DB_HOST = os.getenv('DB_HOST')
+DB_NAME = os.getenv('DB_NAME')
 
-db_url = DB_SERVICE + "://" + DB_USERNAME + ":" + \
-    DB_PASSWORD + "@" + DB_HOST + "/" + DB_NAME
+# DATABASE_URL: str = "sqlite:///./test.db"
+db_url = "sqlite:///./test.db"
+if DB_SERVICE is not None:
+    db_url = DB_SERVICE + "://" + DB_USERNAME + ":" + \
+        DB_PASSWORD + "@" + DB_HOST + "/" + DB_NAME
 
 
 class Settings(BaseSettings):
