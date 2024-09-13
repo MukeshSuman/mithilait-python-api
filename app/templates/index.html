@@ -72,6 +72,12 @@
         <section class="bg-white mt-10 p-6 rounded-lg shadow-md">
             <h2 class="text-2xl font-semibold mb-4">Assessment Results</h2>
 
+            <div class="lg:w-100">
+                <label for="recognizedText" class="block text-lg font-medium mb-2">Text</label>
+                <textarea id="recognizedText" class="w-full p-4 border border-gray-300 rounded-lg" rows="4"
+                    placeholder="" disabled></textarea>
+            </div>
+
             <!-- Responsive Columns for Scores -->
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
                 <!-- Accuracy Score -->
@@ -179,6 +185,8 @@
             const uploadProgress = document.getElementById('upload-progress');
             const uploadStatus = document.getElementById('upload-status');
 
+            const recognizedText = document.getElementById('recognizedText');
+
 
             // Show progress container
             // progressContainer.style.display = 'block';
@@ -211,6 +219,7 @@
                     console.log(response);
                     const data = response.data;
                     console.log(data);
+                    recognizedText.textContent = data.recognizedText || "";
                     updateScore({
                         ...data
                     });
