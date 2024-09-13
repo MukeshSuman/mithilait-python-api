@@ -41,7 +41,7 @@
                     <label for="audio-upload" class="block text-lg font-medium mb-2">Upload Audio</label>
 
                     <!-- Hidden File Input -->
-                    <input id="audio-upload" type="file" accept="audio/*" class="hidden" />
+                    <input id="audio-upload" type="file" accept=".wav" class="hidden" />
 
                     <!-- Audio Icon Button -->
                     <label for="audio-upload"
@@ -64,16 +64,16 @@
         <section class="mt-8 text-center">
             <button id="runScriptButton"
                 class="bg-green-500 text-white px-6 py-3 rounded-lg shadow-lg hover:bg-green-600" onclick="runScript()">
-                Run Script
+                Start
             </button>
         </section>
 
         <!-- Assessment Results Section -->
         <section class="bg-white mt-10 p-6 rounded-lg shadow-md">
-            <h2 class="text-2xl font-semibold mb-4">Assessment Results</h2>
+            <h2 class="text-2xl font-semibold mb-4">Assessment Report</h2>
 
-            <div class="lg:w-100">
-                <label for="recognizedText" class="block text-lg font-medium mb-2">Text</label>
+            <div class="lg:w-100 mb-2">
+                <label for="recognizedText" class="block text-lg font-medium mb-2">Speech-To-Text Result</label>
                 <textarea id="recognizedText" class="w-full p-4 border border-gray-300 rounded-lg" rows="4"
                     placeholder="" disabled></textarea>
             </div>
@@ -203,7 +203,7 @@
                     uploadStatus.textContent = 'Uploading: ' + percentComplete + '%';
                     if (percentComplete === 100) {
                         uploadProgress.classList.add('hidden');
-                        runScriptButton.textContent = 'Script is running...';
+                        runScriptButton.textContent = 'Processing...';
                     }
                 } else {
                     uploadStatus.textContent = 'File uploading...';
@@ -213,7 +213,7 @@
             // Handle when the upload is complete
             xhr.addEventListener('load', function () {
                 runScriptButton.disabled = false;
-                runScriptButton.textContent = 'Run Script';
+                runScriptButton.textContent = 'Start';
                 if (xhr.status === 200) {
                     const response = JSON.parse(xhr.responseText);
                     console.log(response);
