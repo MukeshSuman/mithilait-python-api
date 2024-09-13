@@ -11,3 +11,5 @@ mysql-connector-python
 azure-cognitiveservices-speech
 python-dotenv
 email_validator
+python-multipart
+jinja2
